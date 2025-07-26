@@ -893,15 +893,12 @@
         window.addEventListener('load', () => {
             messageInput.focus();
             
-            // Focus input on load and add debug info
+            // Focus input on load
             setTimeout(() => {
                 console.log('Sanctuary initialized');
                 console.log('API Key present:', sanctuary.apiKey ? 'Yes' : 'No');
                 console.log('API calls used today:', sanctuary.apiCallCount);
-                
-                // Add a debug message showing current mode
-                const debugMode = sanctuary.apiCallCount < sanctuary.maxDailyApiCalls ? 'AI Mode Active' : 'Offline Mode';
-                addMessage(`🔧 DEBUG: ${debugMode} - API calls: ${sanctuary.apiCallCount}/${sanctuary.maxDailyApiCalls}`);
+                // Debug info only in console, not on screen
             }, 1500);
         });
     </script>
