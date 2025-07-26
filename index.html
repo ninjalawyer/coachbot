@@ -3,658 +3,707 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Bot - Your Personal Mental Health Coach</title>
+    <title>Sanctuary - Personal Wellness Companion</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --cream: #faf7f2;
+            --warm-white: #ffffff;
+            --sage: #9ca998;
+            --deep-sage: #6b7b65;
+            --charcoal: #2d2d2d;
+            --gold: #d4af37;
+            --shadow: rgba(45, 45, 45, 0.08);
+            --shadow-heavy: rgba(45, 45, 45, 0.15);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #f5f2ed 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            color: var(--charcoal);
+            line-height: 1.6;
         }
 
-        .chat-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .app-container {
+            background: var(--warm-white);
+            border-radius: 0;
+            box-shadow: 0 40px 80px var(--shadow-heavy), 0 20px 40px var(--shadow);
             width: 100%;
-            max-width: 500px;
-            height: 600px;
+            max-width: 480px;
+            height: 85vh;
+            max-height: 700px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
-        .chat-header {
-            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 20px;
+        .app-header {
+            background: var(--warm-white);
+            padding: 40px 32px 24px;
+            border-bottom: 1px solid rgba(156, 169, 152, 0.15);
+            position: relative;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 300;
+            color: var(--charcoal);
             text-align: center;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
 
-        .chat-header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .chat-header p {
-            opacity: 0.9;
+        .app-subtitle {
             font-size: 14px;
+            color: var(--sage);
+            text-align: center;
+            font-weight: 400;
+            opacity: 0.8;
         }
 
-        .chat-messages {
+        .conversation-area {
             flex: 1;
-            padding: 20px;
+            padding: 0;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: var(--warm-white);
+            position: relative;
+        }
+
+        .conversation-area::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        .conversation-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .conversation-area::-webkit-scrollbar-thumb {
+            background: var(--sage);
+            border-radius: 2px;
         }
 
         .message {
-            margin-bottom: 15px;
-            animation: fadeIn 0.3s ease-in;
+            margin: 0;
+            padding: 24px 32px;
+            border-bottom: 1px solid rgba(156, 169, 152, 0.08);
+            animation: messageSlide 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes messageSlide {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
         }
 
-        .message.bot {
-            text-align: left;
+        .message.assistant {
+            background: linear-gradient(135deg, #fafafa 0%, var(--warm-white) 100%);
         }
 
         .message.user {
+            background: var(--warm-white);
             text-align: right;
         }
 
-        .message-bubble {
-            display: inline-block;
-            padding: 12px 18px;
-            border-radius: 18px;
-            max-width: 80%;
-            word-wrap: break-word;
+        .message-content {
+            font-size: 16px;
+            line-height: 1.7;
+            font-weight: 400;
+            max-width: none;
         }
 
-        .message.bot .message-bubble {
-            background: #e3f2fd;
-            color: #1565c0;
-            border-bottom-left-radius: 6px;
+        .message.assistant .message-content {
+            color: var(--charcoal);
         }
 
-        .message.user .message-bubble {
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-bottom-right-radius: 6px;
+        .message.user .message-content {
+            color: var(--deep-sage);
+            font-weight: 500;
+        }
+
+        .input-section {
+            padding: 32px;
+            background: var(--warm-white);
+            border-top: 1px solid rgba(156, 169, 152, 0.15);
+            position: relative;
+        }
+
+        .input-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 32px;
+            right: 32px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--sage), transparent);
+            opacity: 0.3;
         }
 
         .input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #eee;
-        }
-
-        .input-wrapper {
             display: flex;
-            gap: 10px;
+            align-items: flex-end;
+            gap: 16px;
         }
 
-        #userInput {
+        .input-field {
             flex: 1;
-            padding: 12px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        #userInput:focus {
-            border-color: #667eea;
-        }
-
-        #sendBtn {
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: transparent;
             border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
-            transition: transform 0.2s;
+            font-size: 16px;
+            color: var(--charcoal);
+            placeholder-color: var(--sage);
+            padding: 0;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            line-height: 1.5;
+            min-height: 24px;
+            max-height: 120px;
         }
 
-        #sendBtn:hover {
+        .input-field::placeholder {
+            color: var(--sage);
+            font-weight: 400;
+        }
+
+        .send-button {
+            background: var(--charcoal);
+            color: var(--warm-white);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .send-button:hover {
+            background: var(--deep-sage);
             transform: scale(1.05);
         }
 
-        .quick-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+        .send-button:active {
+            transform: scale(0.95);
         }
 
-        .quick-btn {
-            background: #f0f8ff;
-            color: #1565c0;
-            border: 1px solid #bbdefb;
-            padding: 8px 12px;
-            border-radius: 15px;
-            font-size: 12px;
+        .quick-prompts {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .quick-prompts::-webkit-scrollbar {
+            height: 2px;
+        }
+
+        .quick-prompts::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .quick-prompts::-webkit-scrollbar-thumb {
+            background: var(--sage);
+            border-radius: 2px;
+        }
+
+        .quick-prompt {
+            background: transparent;
+            color: var(--sage);
+            border: 1px solid rgba(156, 169, 152, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-weight: 400;
         }
 
-        .quick-btn:hover {
-            background: #e3f2fd;
-            transform: translateY(-1px);
+        .quick-prompt:hover {
+            border-color: var(--sage);
+            color: var(--deep-sage);
+            background: rgba(156, 169, 152, 0.05);
         }
 
-        .mood-indicator {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 24px;
+        .status-indicator {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--sage);
+            box-shadow: 0 8px 32px var(--shadow);
+            z-index: 1000;
+            font-weight: 500;
         }
 
-        .typing-indicator {
+        .thinking-indicator {
             display: none;
-            align-items: center;
-            gap: 5px;
-            color: #666;
+            padding: 24px 32px;
+            color: var(--sage);
             font-style: italic;
-            margin-left: 18px;
+            font-size: 14px;
+            background: linear-gradient(135deg, #fafafa 0%, var(--warm-white) 100%);
+            border-bottom: 1px solid rgba(156, 169, 152, 0.08);
         }
 
-        .typing-dots {
-            display: flex;
-            gap: 3px;
+        .thinking-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 8px;
         }
 
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: #666;
+        .thinking-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--sage);
             border-radius: 50%;
-            animation: typing 1.5s infinite;
+            animation: thinking 1.8s infinite ease-in-out;
         }
 
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        .thinking-dot:nth-child(2) { animation-delay: 0.3s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.6s; }
 
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
+        @keyframes thinking {
+            0%, 80%, 100% { 
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            40% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .welcome-message {
+            padding: 40px 32px;
+            text-align: center;
+            color: var(--sage);
+            background: linear-gradient(135deg, #fafafa 0%, var(--warm-white) 100%);
+            border-bottom: 1px solid rgba(156, 169, 152, 0.08);
+        }
+
+        .welcome-message h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--charcoal);
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .welcome-message p {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                height: 100vh;
+                max-height: none;
+                border-radius: 0;
+            }
+            
+            .app-header {
+                padding: 32px 24px 20px;
+            }
+            
+            .message {
+                padding: 20px 24px;
+            }
+            
+            .input-section {
+                padding: 24px;
+            }
+            
+            .status-indicator {
+                top: 16px;
+                right: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>🤖 Coach Bot</h1>
-            <p>Your personal mental health companion</p>
+    <div class="app-container">
+        <div class="app-header">
+            <h1 class="app-title">Sanctuary</h1>
+            <p class="app-subtitle">Personal wellness companion</p>
         </div>
         
-        <div class="chat-messages" id="chatMessages">
-            <div class="mood-indicator" id="moodIndicator">😊</div>
-            <div class="message bot">
-                <div class="message-bubble">
-                    Hi there! I'm Coach Bot, your personal mental health companion. I'm here to listen and help you work through whatever's on your mind. What's bothering you today?
-                </div>
+        <div class="conversation-area" id="conversationArea">
+            <div class="welcome-message">
+                <h2>Welcome to your space</h2>
+                <p>I'm here to listen without judgment and help you navigate whatever you're experiencing. What's on your mind today?</p>
             </div>
             
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="quickResponse('I feel anxious')">😰 Feeling anxious</button>
-                <button class="quick-btn" onclick="quickResponse('I had a bad day')">😔 Bad day</button>
-                <button class="quick-btn" onclick="quickResponse('I feel overwhelmed')">😵 Overwhelmed</button>
-                <button class="quick-btn" onclick="quickResponse('I need motivation')">💪 Need motivation</button>
-            </div>
-            
-            <div class="typing-indicator" id="typingIndicator">
-                Coach Bot is thinking
-                <div class="typing-dots">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
+            <div class="thinking-indicator" id="thinkingIndicator">
+                Reflecting on your words
+                <div class="thinking-dots">
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
                 </div>
             </div>
         </div>
         
-        <div class="input-container">
-            <div class="input-wrapper">
-                <input type="text" id="userInput" placeholder="Tell me what's on your mind..." maxlength="500">
-                <button id="sendBtn" onclick="sendMessage()">➤</button>
+        <div class="input-section">
+            <div class="quick-prompts">
+                <button class="quick-prompt" onclick="useQuickPrompt('I\'ve been feeling anxious lately')">Feeling anxious</button>
+                <button class="quick-prompt" onclick="useQuickPrompt('I had a difficult day')">Difficult day</button>
+                <button class="quick-prompt" onclick="useQuickPrompt('I feel overwhelmed')">Overwhelmed</button>
+                <button class="quick-prompt" onclick="useQuickPrompt('I need some perspective')">Need perspective</button>
+            </div>
+            
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="input-field" 
+                    placeholder="Share what's on your mind..."
+                    rows="1"
+                    maxlength="500"
+                ></textarea>
+                <button class="send-button" onclick="sendMessage()" id="sendButton">
+                    →
+                </button>
             </div>
         </div>
     </div>
 
+    <div class="status-indicator" id="statusIndicator">
+        AI-Enhanced Conversations
+    </div>
+
     <script>
-        // Psychology-based response system with Hugging Face API integration
-        class CoachBot {
+        class SanctuaryBot {
             constructor() {
-                this.userHistory = [];
-                this.sessionCount = 0;
-                this.currentMood = 'neutral';
-                this.apiCallCount = 0;
-                this.maxApiCalls = 50; // Daily limit to stay within free tier
-                this.lastApiReset = new Date().toDateString();
+                this.conversationHistory = [];
+                this.sessionMessages = 0;
+                this.apiCallCount = parseInt(localStorage.getItem('sanctuaryApiCalls') || '0');
+                this.maxDailyApiCalls = 50;
+                this.lastApiReset = localStorage.getItem('sanctuaryApiReset') || new Date().toDateString();
                 
-                // Hugging Face API configuration
-                this.hfApiUrl = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
-                this.hfApiKey = ''; // Users will need to add their free API key
-                
-                // Check if we need to reset API call count
+                // Reset API counter if new day
                 if (this.lastApiReset !== new Date().toDateString()) {
                     this.apiCallCount = 0;
                     this.lastApiReset = new Date().toDateString();
+                    localStorage.setItem('sanctuaryApiCalls', '0');
+                    localStorage.setItem('sanctuaryApiReset', this.lastApiReset);
                 }
                 
-                // Coaching system context for AI
-                this.systemContext = `You are Coach Bot, a supportive mental health companion. Your responses should:
-                - Validate emotions first before offering solutions
-                - Use evidence-based techniques from CBT and positive psychology
-                - Ask thoughtful follow-up questions
-                - Keep responses under 150 words
-                - Be warm, empathetic, and non-judgmental
-                - Suggest practical coping strategies when appropriate
-                - Never provide medical advice or diagnose conditions
+                // Hugging Face API configuration
+                this.apiUrl = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
+                this.apiKey = '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';
                 
-                Previous conversation context: `;
+                // Therapeutic context for AI responses
+                this.therapeuticContext = `You are Sanctuary, a sophisticated mental health companion. Respond with:
+                - Deep empathy and validation
+                - Evidence-based insights from psychology
+                - Thoughtful follow-up questions
+                - Practical, gentle guidance
+                - Professional warmth without being clinical
+                Keep responses conversational, insightful, and under 120 words.
                 
-                // Evidence-based response patterns (fallback system)
-                this.responsePatterns = {
+                Context: `;
+                
+                // Curated therapeutic responses for fallback
+                this.therapeuticPatterns = {
                     anxiety: {
-                        keywords: ['anxious', 'worry', 'worried', 'nervous', 'panic', 'afraid', 'scared', 'stress', 'stressed'],
+                        triggers: ['anxious', 'worry', 'nervous', 'panic', 'stressed', 'overwhelmed'],
                         responses: [
-                            "I hear that you're feeling anxious. That's a completely normal human experience. Let's try a quick grounding technique: Can you name 5 things you can see around you right now?",
-                            "Anxiety can feel overwhelming, but remember - you've gotten through difficult moments before. What's one small thing that usually helps you feel more calm?",
-                            "When we're anxious, our minds often jump to worst-case scenarios. What evidence do you have that contradicts your worried thoughts?",
-                        ],
-                        followups: [
-                            "How is your breathing right now? Try taking a slow breath in for 4 seconds, holding for 4, then out for 6.",
-                            "Sometimes anxiety is our mind trying to protect us. What do you think it's trying to protect you from?"
+                            "Anxiety often signals that something matters deeply to you. What specifically is weighing on your mind right now?",
+                            "I hear the worry in your words. Sometimes our minds create stories about the future. What evidence do you have that challenges your most feared outcome?",
+                            "Anxiety can feel all-consuming, but you've navigated difficult feelings before. What has helped ground you in the past?"
                         ]
                     },
-                    
                     sadness: {
-                        keywords: ['sad', 'depressed', 'down', 'low', 'crying', 'tears', 'hurt', 'pain', 'empty', 'hopeless'],
+                        triggers: ['sad', 'depressed', 'down', 'hurt', 'empty', 'hopeless', 'crying'],
                         responses: [
-                            "I'm sorry you're going through a tough time. Your feelings are valid, and it's okay to not be okay sometimes. What's been weighing on your heart?",
-                            "Sadness is one of our most human emotions. It often means something matters deeply to you. Can you tell me more about what's making you feel this way?",
-                            "It takes courage to reach out when you're feeling down. That's actually a sign of strength. What's one tiny thing that brought you even a moment of peace recently?"
-                        ],
-                        followups: [
-                            "Have you been able to talk to anyone else about how you're feeling?",
-                            "What would you tell a good friend who was going through exactly what you're experiencing?"
+                            "Your pain is real and valid. Sadness often reflects how much something mattered to you. What are you grieving right now?",
+                            "It takes courage to sit with difficult emotions. What would you need to feel even slightly more supported in this moment?",
+                            "Sometimes sadness is how we honor what we've lost or what we hoped for. What story is your sadness trying to tell you?"
                         ]
                     },
-                    
                     anger: {
-                        keywords: ['angry', 'mad', 'furious', 'frustrated', 'annoyed', 'irritated', 'rage', 'hate'],
+                        triggers: ['angry', 'furious', 'frustrated', 'irritated', 'mad', 'rage'],
                         responses: [
-                            "It sounds like something really got to you. Anger often tells us that something important to us has been threatened or violated. What happened?",
-                            "That frustration sounds really intense. Before we dive in, have you had a chance to take some deep breaths or step away from the situation?",
-                            "Anger can be a powerful emotion - sometimes it motivates us to make positive changes. What do you think your anger is trying to tell you?"
-                        ],
-                        followups: [
-                            "What would need to happen for you to feel better about this situation?",
-                            "Is this anger about what just happened, or does it connect to something deeper?"
+                            "Anger often protects something vulnerable underneath. What boundary or value feels threatened right now?",
+                            "That frustration sounds intense. What would it look like to honor that feeling while also caring for yourself?",
+                            "Your anger is information. What is it trying to tell you about what you need or what matters to you?"
                         ]
                     },
-                    
-                    overwhelm: {
-                        keywords: ['overwhelmed', 'too much', 'cant handle', 'exhausted', 'burned out', 'swamped'],
-                        responses: [
-                            "Feeling overwhelmed is your mind's way of saying 'this is a lot right now.' Let's break it down together. What feels like the biggest thing on your plate?",
-                            "When everything feels urgent, nothing actually is. What's one thing you could let go of or do differently today?",
-                            "You're carrying a lot right now. What would it look like to be compassionate with yourself in this moment?"
-                        ],
-                        followups: [
-                            "If you could only accomplish one thing today, what would make you feel most relieved?",
-                            "What support do you have available that you might not be using?"
-                        ]
-                    },
-                    
-                    work: {
-                        keywords: ['job', 'work', 'boss', 'colleague', 'meeting', 'deadline', 'career', 'office'],
-                        responses: [
-                            "Work challenges can really affect our whole day. What's going on that's making work difficult right now?",
-                            "It sounds like work is weighing on you. Sometimes it helps to separate what's within our control from what isn't. What part of this situation can you influence?",
-                            "Work stress is so common, but that doesn't make it easier. What would your ideal outcome look like here?"
-                        ]
-                    },
-                    
                     relationships: {
-                        keywords: ['friend', 'family', 'partner', 'relationship', 'fight', 'argument', 'conflict', 'boyfriend', 'girlfriend'],
+                        triggers: ['relationship', 'partner', 'friend', 'family', 'conflict', 'fight', 'hurt by'],
                         responses: [
-                            "Relationship challenges can be really heart-heavy. It sounds like this person matters to you. What's been happening?",
-                            "People we care about can sometimes hurt us the most, often without meaning to. What do you think they might not understand about your perspective?",
-                            "Healthy relationships involve conflict sometimes - it's how we handle it that matters. What outcome would feel good for both of you?"
-                        ]
-                    },
-                    
-                    motivation: {
-                        keywords: ['unmotivated', 'lazy', 'procrastinating', 'stuck', 'no energy', 'give up', 'motivation'],
-                        responses: [
-                            "Motivation comes and goes - that's totally normal. What's something small you accomplished recently, even if it seems minor?",
-                            "Sometimes 'lack of motivation' is actually our body or mind asking for rest or a different approach. What's been draining your energy lately?",
-                            "You showed up here today and asked for help - that's actually a pretty motivated thing to do. What would 'good enough' look like right now?"
+                            "Relationships can hold our deepest joys and most profound hurts. What are you hoping for in this situation?",
+                            "It sounds like this relationship means something significant to you. What would healing look like here?",
+                            "Human connection is complex. What do you think the other person might not understand about your experience?"
                         ]
                     }
                 };
                 
-                // Positive psychology techniques
-                this.positiveInterventions = [
-                    "What's one thing you're grateful for today, even something small?",
-                    "What's a strength you have that you might be forgetting about right now?",
-                    "What would someone who cares about you want to remind you of?",
-                    "What's gone better than expected recently?",
-                    "What's one way you've grown or learned something new lately?"
-                ];
-                
-                // CBT-style reframing questions
-                this.reframingQuestions = [
-                    "What evidence supports this thought? What evidence challenges it?",
-                    "What would you tell a friend in this exact situation?",
-                    "Is this thought helpful or unhelpful right now?",
-                    "What's the worst that could realistically happen? What's the best? What's most likely?",
-                    "How might you see this situation differently in a year from now?"
-                ];
+                this.updateStatusIndicator();
             }
             
-            analyzeInput(input) {
-                const text = input.toLowerCase();
-                let detectedCategories = [];
-                let confidence = 0;
+            async generateResponse(userMessage) {
+                this.conversationHistory.push({ role: 'user', content: userMessage });
+                this.sessionMessages++;
                 
-                for (let category in this.responsePatterns) {
-                    const pattern = this.responsePatterns[category];
-                    const matches = pattern.keywords.filter(keyword => text.includes(keyword));
-                    if (matches.length > 0) {
-                        detectedCategories.push({
-                            category: category,
-                            confidence: matches.length / pattern.keywords.length,
-                            matchedWords: matches
-                        });
-                    }
-                }
-                
-                // Sort by confidence
-                detectedCategories.sort((a, b) => b.confidence - a.confidence);
-                
-                return detectedCategories.length > 0 ? detectedCategories[0] : null;
-            }
-            
-            
-            async generateResponse(input) {
-                this.userHistory.push(input);
-                this.sessionCount++;
-                
-                // Try Hugging Face API first if we haven't exceeded limits
-                if (this.hfApiKey && this.apiCallCount < this.maxApiCalls) {
+                // Try AI response if within limits
+                if (this.apiCallCount < this.maxDailyApiCalls) {
                     try {
-                        const aiResponse = await this.getHuggingFaceResponse(input);
+                        const aiResponse = await this.getAIResponse(userMessage);
                         if (aiResponse) {
                             this.apiCallCount++;
+                            localStorage.setItem('sanctuaryApiCalls', this.apiCallCount.toString());
+                            this.updateStatusIndicator();
                             return aiResponse;
                         }
                     } catch (error) {
-                        console.log('API call failed, using fallback response');
+                        console.log('AI response failed, using therapeutic fallback');
                     }
                 }
                 
-                // Fallback to pattern-based responses
-                return this.getPatternResponse(input);
+                // Fallback to therapeutic patterns
+                return this.getTherapeuticResponse(userMessage);
             }
             
-            async getHuggingFaceResponse(input) {
-                const context = this.buildContext(input);
-                
-                const payload = {
-                    inputs: {
-                        past_user_inputs: this.userHistory.slice(-3), // Last 3 user messages
-                        generated_responses: [], // We'll keep this simple for now
-                        text: context + input
-                    },
-                    parameters: {
-                        max_length: 150,
-                        temperature: 0.7,
-                        do_sample: true,
-                        top_p: 0.9
-                    }
-                };
+            async getAIResponse(userMessage) {
+                const context = this.buildConversationContext(userMessage);
                 
                 try {
-                    const response = await fetch(this.hfApiUrl, {
+                    const response = await fetch(this.apiUrl, {
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${this.hfApiKey}`,
+                            'Authorization': `Bearer ${this.apiKey}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({
+                            inputs: {
+                                past_user_inputs: this.conversationHistory.slice(-3).filter(m => m.role === 'user').map(m => m.content),
+                                generated_responses: [],
+                                text: context + userMessage
+                            },
+                            parameters: {
+                                max_length: 120,
+                                temperature: 0.8,
+                                do_sample: true,
+                                top_p: 0.9
+                            }
+                        })
                     });
                     
-                    if (!response.ok) {
-                        throw new Error(`API Error: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`API Error: ${response.status}`);
                     
                     const data = await response.json();
                     
                     if (data.generated_text) {
-                        return this.processAIResponse(data.generated_text);
+                        return this.refineAIResponse(data.generated_text);
                     }
                     
                     return null;
                 } catch (error) {
-                    console.error('Hugging Face API error:', error);
+                    console.error('AI API error:', error);
                     return null;
                 }
             }
             
-            buildContext(input) {
-                const recentHistory = this.userHistory.slice(-2).join(' ');
-                return this.systemContext + recentHistory + '\n\nUser: ';
+            buildConversationContext(currentMessage) {
+                const recentContext = this.conversationHistory
+                    .slice(-2)
+                    .map(m => m.content)
+                    .join(' ');
+                return this.therapeuticContext + recentContext + '\n\nUser: ';
             }
             
-            processAIResponse(rawResponse) {
-                // Clean up AI response
+            refineAIResponse(rawResponse) {
                 let response = rawResponse.trim();
                 
-                // Ensure it's not too long
-                if (response.length > 300) {
-                    response = response.substring(0, 300) + '...';
+                // Ensure appropriate length
+                if (response.length > 200) {
+                    response = response.substring(0, 200) + '...';
                 }
                 
-                // Add some coaching elements if missing
+                // Add therapeutic elements if missing
                 if (!response.includes('?') && Math.random() > 0.6) {
-                    const followUpQuestions = [
-                        " How does that feel for you?",
-                        " What's one small step you could take?",
-                        " What support do you have available?",
-                        " How can you be kind to yourself about this?"
+                    const therapeuticQuestions = [
+                        " What feels most important about this to you?",
+                        " How are you taking care of yourself through this?",
+                        " What would self-compassion look like here?",
+                        " What support do you have available?"
                     ];
-                    response += followUpQuestions[Math.floor(Math.random() * followUpQuestions.length)];
+                    response += therapeuticQuestions[Math.floor(Math.random() * therapeuticQuestions.length)];
                 }
                 
                 return response;
             }
             
-            getPatternResponse(input) {
-                this.userHistory.push(input);
-                const analysis = this.analyzeInput(input);
+            getTherapeuticResponse(userMessage) {
+                const message = userMessage.toLowerCase();
                 
-                if (analysis) {
-                    const category = this.responsePatterns[analysis.category];
-                    const responses = category.responses;
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    
-                    // Update mood indicator
-                    this.updateMood(analysis.category);
-                    
-                    // Add follow-up questions occasionally
-                    if (category.followups && Math.random() > 0.6) {
-                        const followup = category.followups[Math.floor(Math.random() * category.followups.length)];
-                        return randomResponse + "\n\n" + followup;
+                // Find matching therapeutic pattern
+                for (const [category, pattern] of Object.entries(this.therapeuticPatterns)) {
+                    const hasMatch = pattern.triggers.some(trigger => message.includes(trigger));
+                    if (hasMatch) {
+                        const responses = pattern.responses;
+                        return responses[Math.floor(Math.random() * responses.length)];
                     }
-                    
-                    return randomResponse;
+                }
+                
+                // Generic therapeutic responses
+                const genericResponses = [
+                    "I'm here with you in this moment. What feels most present for you right now?",
+                    "Thank you for trusting me with this. What would it mean to you to feel heard about this?",
+                    "Your experience matters. What's the most difficult part of what you're going through?",
+                    "I sense this is weighing on you. What kind of support would feel most helpful right now?",
+                    "There's wisdom in what you're feeling. What is your inner voice telling you about this situation?"
+                ];
+                
+                return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+            }
+            
+            updateStatusIndicator() {
+                const indicator = document.getElementById('statusIndicator');
+                const remaining = this.maxDailyApiCalls - this.apiCallCount;
+                
+                if (remaining > 10) {
+                    indicator.textContent = 'AI-Enhanced Conversations';
+                } else if (remaining > 0) {
+                    indicator.textContent = `AI Mode (${remaining} left today)`;
                 } else {
-                    // Generic supportive responses for unmatched input
-                    const genericResponses = [
-                        "I'm listening. Can you tell me more about what's going on?",
-                        "That sounds important to you. What's the most difficult part about this situation?",
-                        "I hear you. What's been on your mind about this?",
-                        "Thank you for sharing that with me. How has this been affecting you?",
-                        "It sounds like you're dealing with something significant. What support do you need right now?"
-                    ];
-                    
-                    // Occasionally add positive interventions or reframing questions
-                    if (this.sessionCount > 2 && Math.random() > 0.7) {
-                        if (Math.random() > 0.5) {
-                            return genericResponses[Math.floor(Math.random() * genericResponses.length)] + 
-                                   "\n\n" + this.positiveInterventions[Math.floor(Math.random() * this.positiveInterventions.length)];
-                        } else {
-                            return genericResponses[Math.floor(Math.random() * genericResponses.length)] + 
-                                   "\n\n" + this.reframingQuestions[Math.floor(Math.random() * this.reframingQuestions.length)];
-                        }
-                    }
-                    
-                    return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+                    indicator.textContent = 'Therapeutic Mode';
                 }
             }
-            
-            updateMood(category) {
-                const moodEmojis = {
-                    anxiety: '😰',
-                    sadness: '😔',
-                    anger: '😤',
-                    overwhelm: '😵',
-                    work: '💼',
-                    relationships: '💙',
-                    motivation: '💪',
-                    neutral: '😊'
-                };
-                
-                const moodIndicator = document.getElementById('moodIndicator');
-                moodIndicator.textContent = moodEmojis[category] || '😊';
-                this.currentMood = category;
-            }
         }
 
-        // Initialize the bot
-        const coachBot = new CoachBot();
+        // Initialize Sanctuary
+        const sanctuary = new SanctuaryBot();
 
-        // API Key setup
-        function setupApiKey() {
-            const apiKey = prompt("Enter your free Hugging Face API key (or leave blank to use offline mode):\n\nGet one free at: https://huggingface.co/settings/tokens");
-            if (apiKey && apiKey.trim()) {
-                coachBot.hfApiKey = apiKey.trim();
-                addMessage("✅ Connected to AI! Your conversations will be much more natural now.", false);
-            } else {
-                addMessage("Running in offline mode with psychology-based responses. You can add an API key anytime by refreshing.", false);
-            }
-        }
-
-        // Ask for API key on startup
-        setTimeout(setupApiKey, 1000);
-
-        function addMessage(message, isUser = false) {
-            const chatMessages = document.getElementById('chatMessages');
+        function addMessage(content, isUser = false) {
+            const conversationArea = document.getElementById('conversationArea');
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
             
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = 'message-bubble';
-            bubbleDiv.textContent = message;
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
             
-            messageDiv.appendChild(bubbleDiv);
-            chatMessages.appendChild(messageDiv);
+            messageDiv.appendChild(contentDiv);
+            conversationArea.appendChild(messageDiv);
             
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Smooth scroll to bottom
+            conversationArea.scrollTo({
+                top: conversationArea.scrollHeight,
+                behavior: 'smooth'
+            });
         }
 
-        function showTypingIndicator() {
-            document.getElementById('typingIndicator').style.display = 'flex';
+        function showThinking() {
+            document.getElementById('thinkingIndicator').style.display = 'block';
         }
 
-        function hideTypingIndicator() {
-            document.getElementById('typingIndicator').style.display = 'none';
+        function hideThinking() {
+            document.getElementById('thinkingIndicator').style.display = 'none';
         }
 
-        function sendMessage() {
-            const input = document.getElementById('userInput');
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
             const message = input.value.trim();
             
-            if (message === '') return;
+            if (!message) return;
             
             // Add user message
             addMessage(message, true);
             input.value = '';
+            input.style.height = 'auto';
             
-            // Show typing indicator
-            showTypingIndicator();
+            // Show thinking state
+            showThinking();
             
-            // Generate response (now async)
-            coachBot.generateResponse(message).then(response => {
-                hideTypingIndicator();
+            try {
+                // Generate response with realistic delay
+                const response = await sanctuary.generateResponse(message);
+                
+                // Simulate thoughtful processing time
+                await new Promise(resolve => setTimeout(resolve, 1200 + Math.random() * 800));
+                
+                hideThinking();
                 addMessage(response);
-            }).catch(error => {
-                hideTypingIndicator();
-                console.error('Error generating response:', error);
-                addMessage("I'm having trouble responding right now. Can you try rephrasing that?");
-            });
+                
+            } catch (error) {
+                hideThinking();
+                addMessage("I'm having trouble processing that right now. Could you try rephrasing your thoughts?");
+                console.error('Response generation error:', error);
+            }
         }
 
-        function quickResponse(message) {
-            document.getElementById('userInput').value = message;
+        function useQuickPrompt(prompt) {
+            document.getElementById('messageInput').value = prompt;
             sendMessage();
         }
 
-        // API Status indicator
-        function updateApiStatus() {
-            const statusDiv = document.createElement('div');
-            statusDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; z-index: 1000;';
-            
-            if (coachBot.hfApiKey) {
-                statusDiv.textContent = `🤖 AI Mode (${coachBot.maxApiCalls - coachBot.apiCallCount} calls left)`;
-                statusDiv.style.background = 'rgba(76, 175, 80, 0.8)';
-            } else {
-                statusDiv.textContent = '🧠 Offline Mode';
-                statusDiv.style.background = 'rgba(255, 152, 0, 0.8)';
-            }
-            
-            document.body.appendChild(statusDiv);
-            
-            // Update every few seconds
-            setTimeout(() => {
-                if (statusDiv.parentNode) {
-                    statusDiv.parentNode.removeChild(statusDiv);
-                    updateApiStatus();
-                }
-            }, 5000);
-        }
+        // Auto-resize textarea
+        const messageInput = document.getElementById('messageInput');
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
 
-        setTimeout(updateApiStatus, 2000);
-
-        // Enter key support
-        document.getElementById('userInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        // Send on Enter (but allow Shift+Enter for new lines)
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendMessage();
             }
         });
 
         // Focus input on load
-        window.onload = function() {
-            document.getElementById('userInput').focus();
-        };
+        window.addEventListener('load', () => {
+            messageInput.focus();
+            
+            // Show initial status after a moment
+            setTimeout(() => {
+                const statusMsg = sanctuary.apiCallCount < sanctuary.maxDailyApiCalls ? 
+                    "✨ Enhanced with AI for more natural conversations. Your privacy is protected." :
+                    "🌿 Running in therapeutic mode with evidence-based psychology techniques.";
+                addMessage(statusMsg);
+            }, 1500);
+        });
     </script>
 </body>
 </html>
