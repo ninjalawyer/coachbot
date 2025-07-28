@@ -773,9 +773,12 @@
                 <ol>
                     <li>Visit <a href="https://huggingface.co/join" target="_blank" class="api-link">huggingface.co/join</a> and create a free account</li>
                     <li>Go to your <a href="https://huggingface.co/settings/tokens" target="_blank" class="api-link">Settings → Access Tokens</a></li>
-                    <li>Click "New token", give it a name like "Sanctuary", and select "Read" access</li>
+                    <li>Click "New token", give it a name like "Sanctuary", and select <strong>"Read"</strong> access</li>
                     <li>Copy the token that starts with "hf_" and paste it below</li>
                 </ol>
+                <p style="font-size: 12px; color: var(--gold); margin-top: 12px; background: rgba(212, 175, 55, 0.1); padding: 8px; border-radius: 4px;">
+                    <strong>Note:</strong> Some browsers block direct API calls due to CORS restrictions. If this happens, the app will continue working in therapeutic mode with excellent curated responses.
+                </p>
             </div>
 
             <div class="api-input-group">
@@ -1163,8 +1166,17 @@ Response:`;
                 return;
             }
             
+            // Show testing message
+            const saveButton = document.querySelector('.api-button.primary');
+            const originalText = saveButton.textContent;
+            saveButton.textContent = 'Testing API Key...';
+            saveButton.disabled = true;
+            
             // Test the API key first
             testApiKey(apiKey).then(isValid => {
+                saveButton.textContent = originalText;
+                saveButton.disabled = false;
+                
                 if (isValid) {
                     // Save API key (session storage for privacy by default)
                     sanctuary.saveApiKey(apiKey, false);
@@ -1177,9 +1189,12 @@ Response:`;
                     // Show success message
                     addMessage("✨ AI mode is now enabled! I can provide more nuanced and contextual responses. How are you feeling today?", false);
                 } else {
-                    alert('Unable to connect with this API key. Please check that it\'s correct and has the right permissions.');
+                    // Don't show error alert here - testApiKey handles user messaging
+                    console.log('API key test failed, user has been informed');
                 }
             }).catch(error => {
+                saveButton.textContent = originalText;
+                saveButton.disabled = false;
                 console.error('API key test failed:', error);
                 alert('Error testing API key. Please try again.');
             });
@@ -1187,6 +1202,9 @@ Response:`;
 
         async function testApiKey(apiKey) {
             try {
+                console.log('Testing API key...');
+                
+                // Try a simple test call
                 const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
                     method: 'POST',
                     headers: {
@@ -1195,14 +1213,47 @@ Response:`;
                     },
                     body: JSON.stringify({
                         inputs: "Hello",
-                        parameters: { max_new_tokens: 10 }
+                        parameters: { 
+                            max_new_tokens: 10,
+                            return_full_text: false
+                        },
+                        options: {
+                            wait_for_model: true
+                        }
                     })
                 });
                 
-                // Even if the model is loading (503), the API key is valid
-                return response.status === 200 || response.status === 503;
+                console.log('Test response status:', response.status);
+                console.log('Test response headers:', [...response.headers.entries()]);
+                
+                // Check if it's a CORS error (this will throw)
+                if (response.status === 0) {
+                    console.error('CORS error detected');
+                    return false;
+                }
+                
+                // 200 = success, 503 = model loading (but key is valid), 401/403 = bad key
+                if (response.status === 200 || response.status === 503) {
+                    console.log('API key test successful');
+                    return true;
+                } else if (response.status === 401 || response.status === 403) {
+                    console.error('API key authentication failed');
+                    return false;
+                } else {
+                    const errorText = await response.text();
+                    console.error('API test error:', response.status, errorText);
+                    return false;
+                }
+                
             } catch (error) {
                 console.error('API key test error:', error);
+                
+                // Check if it's a network/CORS error
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    console.error('This appears to be a CORS error - API calls may not work from browser');
+                    alert('⚠️ Browser Limitation Detected\n\nThe Hugging Face API may be blocked by your browser due to CORS restrictions. This is a common issue with browser-based AI apps.\n\nSolutions:\n1. Try a different browser or disable CORS restrictions\n2. Use the therapeutic mode (which works great!)\n3. For full AI features, you\'d need to run this on a server\n\nThe app will still provide excellent therapeutic responses!');
+                }
+                
                 return false;
             }
         }
