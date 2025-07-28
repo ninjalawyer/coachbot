@@ -84,6 +84,166 @@
             opacity: 0.8;
         }
 
+        .api-setup-button {
+            background: transparent;
+            color: var(--sage);
+            border: 1px solid rgba(156, 169, 152, 0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+            margin: 8px auto 0;
+            display: block;
+            transition: all 0.3s ease;
+            font-weight: 400;
+        }
+
+        .api-setup-button:hover {
+            border-color: var(--sage);
+            color: var(--deep-sage);
+            background: rgba(156, 169, 152, 0.05);
+        }
+
+        .api-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(45, 45, 45, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .api-modal-content {
+            background: var(--warm-white);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 80px var(--shadow-heavy);
+            position: relative;
+        }
+
+        .api-modal h3 {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--charcoal);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .api-modal p {
+            font-size: 14px;
+            color: var(--sage);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .api-input-group {
+            margin-bottom: 20px;
+        }
+
+        .api-input-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--deep-sage);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .api-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(156, 169, 152, 0.3);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--charcoal);
+            background: var(--warm-white);
+            font-family: 'Monaco', 'Menlo', monospace;
+            transition: border-color 0.3s ease;
+        }
+
+        .api-input:focus {
+            outline: none;
+            border-color: var(--sage);
+        }
+
+        .api-input::placeholder {
+            color: var(--sage);
+            opacity: 0.6;
+        }
+
+        .api-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .api-button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-weight: 500;
+        }
+
+        .api-button.primary {
+            background: var(--charcoal);
+            color: var(--warm-white);
+        }
+
+        .api-button.primary:hover {
+            background: var(--deep-sage);
+        }
+
+        .api-button.secondary {
+            background: transparent;
+            color: var(--sage);
+            border: 1px solid rgba(156, 169, 152, 0.3);
+        }
+
+        .api-button.secondary:hover {
+            border-color: var(--sage);
+            color: var(--deep-sage);
+        }
+
+        .api-link {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .api-link:hover {
+            text-decoration: underline;
+        }
+
+        .api-steps {
+            background: rgba(156, 169, 152, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .api-steps ol {
+            margin-left: 16px;
+        }
+
+        .api-steps li {
+            margin-bottom: 8px;
+        }
+
         .conversation-area {
             flex: 1;
             padding: 0;
@@ -527,6 +687,11 @@
                 top: 16px;
                 right: 16px;
             }
+
+            .api-modal-content {
+                padding: 24px;
+                margin: 20px;
+            }
         }
     </style>
 </head>
@@ -543,6 +708,7 @@
         <div class="app-header">
             <h1 class="app-title">Sanctuary</h1>
             <p class="app-subtitle">Personal wellness companion • Beta</p>
+            <button class="api-setup-button" onclick="openApiModal()">⚡ Enable AI Mode</button>
         </div>
         
         <div class="conversation-area" id="conversationArea">
@@ -551,7 +717,7 @@
                 <p>I'm here to listen without judgment and help you navigate whatever you're experiencing. What's on your mind today?</p>
                 
                 <div class="privacy-notice">
-                    Conversations use AI processing through secure third-party services. No personal information is collected, and conversations aren't permanently stored.
+                    Currently in therapeutic mode. Enable AI mode above for enhanced conversations. No personal information is collected, and conversations aren't permanently stored.
                 </div>
             </div>
             
@@ -593,7 +759,45 @@
     </div>
 
     <div class="status-indicator" id="statusIndicator">
-        AI-Enhanced Conversations
+        Therapeutic Mode
+    </div>
+
+    <!-- API Setup Modal -->
+    <div class="api-modal" id="apiModal">
+        <div class="api-modal-content">
+            <h3>Enable AI-Enhanced Conversations</h3>
+            <p>To unlock AI-powered responses, you'll need a free Hugging Face API key. This enables more nuanced and contextual conversations while keeping your data private.</p>
+            
+            <div class="api-steps">
+                <strong>How to get your free API key:</strong>
+                <ol>
+                    <li>Visit <a href="https://huggingface.co/join" target="_blank" class="api-link">huggingface.co/join</a> and create a free account</li>
+                    <li>Go to your <a href="https://huggingface.co/settings/tokens" target="_blank" class="api-link">Settings → Access Tokens</a></li>
+                    <li>Click "New token", give it a name like "Sanctuary", and select "Read" access</li>
+                    <li>Copy the token that starts with "hf_" and paste it below</li>
+                </ol>
+            </div>
+
+            <div class="api-input-group">
+                <label for="apiKeyInput">Hugging Face API Key:</label>
+                <input 
+                    type="password" 
+                    id="apiKeyInput" 
+                    class="api-input" 
+                    placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    maxlength="100"
+                >
+            </div>
+
+            <p style="font-size: 12px; color: var(--sage); margin-bottom: 0;">
+                Your API key is stored locally in your browser and never sent to our servers. It's only used to communicate directly with Hugging Face for AI responses.
+            </p>
+
+            <div class="api-buttons">
+                <button class="api-button secondary" onclick="closeApiModal()">Cancel</button>
+                <button class="api-button primary" onclick="saveApiKey()">Save & Enable AI</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -601,21 +805,21 @@
             constructor() {
                 this.conversationHistory = [];
                 this.sessionMessages = 0;
-                this.apiCallCount = parseInt(localStorage.getItem('sanctuaryApiCalls') || '0');
+                this.apiKey = this.loadApiKey();
+                this.apiCallCount = parseInt(sessionStorage.getItem('sanctuaryApiCalls') || '0');
                 this.maxDailyApiCalls = 50;
-                this.lastApiReset = localStorage.getItem('sanctuaryApiReset') || new Date().toDateString();
+                this.lastApiReset = sessionStorage.getItem('sanctuaryApiReset') || new Date().toDateString();
                 
                 // Reset API counter if new day
                 if (this.lastApiReset !== new Date().toDateString()) {
                     this.apiCallCount = 0;
                     this.lastApiReset = new Date().toDateString();
-                    localStorage.setItem('sanctuaryApiCalls', '0');
-                    localStorage.setItem('sanctuaryApiReset', this.lastApiReset);
+                    sessionStorage.setItem('sanctuaryApiCalls', '0');
+                    sessionStorage.setItem('sanctuaryApiReset', this.lastApiReset);
                 }
                 
                 // Hugging Face API configuration
                 this.apiUrl = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
-                this.apiKey = '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';
                 
                 // Therapeutic context for AI responses
                 this.therapeuticContext = `You are Sanctuary, a sophisticated mental health companion. Respond with:
@@ -666,18 +870,37 @@
                 
                 this.updateStatusIndicator();
             }
+
+            loadApiKey() {
+                // Try to load from localStorage (persistent) first, then sessionStorage
+                return localStorage.getItem('sanctuaryApiKey') || sessionStorage.getItem('sanctuaryApiKey') || null;
+            }
+
+            saveApiKey(key, persistent = false) {
+                this.apiKey = key;
+                if (persistent) {
+                    localStorage.setItem('sanctuaryApiKey', key);
+                } else {
+                    sessionStorage.setItem('sanctuaryApiKey', key);
+                }
+                this.updateStatusIndicator();
+            }
+
+            hasApiKey() {
+                return this.apiKey && this.apiKey.startsWith('hf_');
+            }
             
             async generateResponse(userMessage) {
                 this.conversationHistory.push({ role: 'user', content: userMessage });
                 this.sessionMessages++;
                 
-                // Try AI response if within limits
-                if (this.apiCallCount < this.maxDailyApiCalls) {
+                // Try AI response if API key is available and within limits
+                if (this.hasApiKey() && this.apiCallCount < this.maxDailyApiCalls) {
                     try {
                         const aiResponse = await this.getAIResponse(userMessage);
                         if (aiResponse) {
                             this.apiCallCount++;
-                            localStorage.setItem('sanctuaryApiCalls', this.apiCallCount.toString());
+                            sessionStorage.setItem('sanctuaryApiCalls', this.apiCallCount.toString());
                             this.updateStatusIndicator();
                             return aiResponse;
                         }
@@ -796,10 +1019,16 @@
             
             updateStatusIndicator() {
                 const indicator = document.getElementById('statusIndicator');
+                
+                if (!this.hasApiKey()) {
+                    indicator.textContent = 'Therapeutic Mode';
+                    return;
+                }
+                
                 const remaining = this.maxDailyApiCalls - this.apiCallCount;
                 
                 if (remaining > 10) {
-                    indicator.textContent = 'AI-Enhanced Conversations';
+                    indicator.textContent = 'AI-Enhanced Mode';
                 } else if (remaining > 0) {
                     indicator.textContent = `AI Mode (${remaining} left today)`;
                 } else {
@@ -810,6 +1039,57 @@
 
         // Initialize Sanctuary
         const sanctuary = new SanctuaryBot();
+
+        // API Modal Functions
+        function openApiModal() {
+            document.getElementById('apiModal').style.display = 'flex';
+            document.getElementById('apiKeyInput').focus();
+        }
+
+        function closeApiModal() {
+            document.getElementById('apiModal').style.display = 'none';
+            document.getElementById('apiKeyInput').value = '';
+        }
+
+        function saveApiKey() {
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey) {
+                alert('Please enter your Hugging Face API key.');
+                return;
+            }
+            
+            if (!apiKey.startsWith('hf_')) {
+                alert('Invalid API key format. Hugging Face API keys start with "hf_"');
+                return;
+            }
+            
+            // Save API key (session storage for privacy by default)
+            sanctuary.saveApiKey(apiKey, false);
+            closeApiModal();
+            
+            // Update welcome message
+            const welcomeMessage = document.querySelector('.welcome-message .privacy-notice');
+            welcomeMessage.textContent = 'AI mode enabled! Enhanced conversations with secure processing through Hugging Face. No personal information is collected, and conversations aren\'t permanently stored.';
+            
+            // Show success message
+            addMessage("✨ AI mode is now enabled! I can provide more nuanced and contextual responses. How are you feeling today?", false);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('apiModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeApiModal();
+            }
+        });
+
+        // Handle Enter key in API input
+        document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                saveApiKey();
+            }
+        });
 
         function addMessage(content, isUser = false) {
             const conversationArea = document.getElementById('conversationArea');
@@ -893,12 +1173,15 @@
         window.addEventListener('load', () => {
             messageInput.focus();
             
-            // Focus input on load
             setTimeout(() => {
                 console.log('Sanctuary initialized');
-                console.log('API Key present:', sanctuary.apiKey ? 'Yes' : 'No');
+                console.log('API Key present:', sanctuary.hasApiKey() ? 'Yes' : 'No');
                 console.log('API calls used today:', sanctuary.apiCallCount);
-                // Debug info only in console, not on screen
+                
+                // Show initial setup hint if no API key
+                if (!sanctuary.hasApiKey()) {
+                    console.log('Tip: Click "Enable AI Mode" to enhance conversations with your free Hugging Face API key');
+                }
             }, 1500);
         });
     </script>
